@@ -56,11 +56,13 @@ export function ExperimentHistory({
   }
 
   return (
-    <Card>
+    <Card className="shadow-none border-0 bg-white/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Experiment History</span>
-          <Badge variant="secondary">{experiments.length} total</Badge>
+          <span className="text-gradient">Experiment History</span>
+          <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
+            {experiments.length} total
+          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -68,10 +70,10 @@ export function ExperimentHistory({
           {experiments.map((experiment) => (
             <div
               key={experiment.id}
-              className={`p-4 border rounded-lg transition-all cursor-pointer hover:shadow-md ${
+              className={`p-4 border rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${
                 selectedId === experiment.id
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary/50'
+                  ? 'border-blue-500 bg-blue-50 shadow-blue-500/20'
+                  : 'border-gray-200 hover:border-blue-300 bg-white/50'
               }`}
               onClick={() => onSelect(experiment.id)}
             >
@@ -80,7 +82,7 @@ export function ExperimentHistory({
                   <p className="text-sm font-medium line-clamp-2">
                     {experiment.prompt}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Clock className="h-3 w-3" />
                     {formatDistanceToNow(new Date(experiment.created_at), {
                       addSuffix: true,

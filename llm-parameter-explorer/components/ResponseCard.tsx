@@ -38,12 +38,12 @@ export function ResponseCard({
 
   return (
     <Card
-      className={`transition-all ${
+      className={`transition-all shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl hover:-translate-y-1 ${
         isTopPerformer
-          ? 'border-green-500 dark:border-green-700 shadow-lg shadow-green-500/10'
+          ? 'border-l-4 border-l-green-500 shadow-green-500/20'
           : isBottomPerformer
-          ? 'border-red-500 dark:border-red-700 shadow-lg shadow-red-500/10'
-          : ''
+          ? 'border-l-4 border-l-red-500 shadow-red-500/20'
+          : 'border-l-4 border-l-gray-300'
       }`}
     >
       <CardHeader>
@@ -65,29 +65,29 @@ export function ResponseCard({
             
             <div className="flex items-center gap-3 text-sm flex-wrap">
               <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">Temperature:</span>
-                <Badge variant="outline" className="font-mono">
+                <span className="text-gray-600">Temperature:</span>
+                <Badge variant="outline" className="font-mono bg-orange-50 text-orange-700 border-orange-200">
                   {response.temperature.toFixed(2)}
                 </Badge>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">Top P:</span>
-                <Badge variant="outline" className="font-mono">
+                <span className="text-gray-600">Top P:</span>
+                <Badge variant="outline" className="font-mono bg-purple-50 text-purple-700 border-purple-200">
                   {response.top_p.toFixed(2)}
                 </Badge>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">Overall Score:</span>
+                <span className="text-gray-600">Overall Score:</span>
                 <Badge
                   variant="outline"
                   className={`font-semibold ${
                     response.metrics.overallScore >= 85
-                      ? 'text-green-600 dark:text-green-400'
+                      ? 'bg-green-50 text-green-700 border-green-200'
                       : response.metrics.overallScore >= 70
-                      ? 'text-blue-600 dark:text-blue-400'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
                       : response.metrics.overallScore >= 50
-                      ? 'text-yellow-600 dark:text-yellow-400'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                      : 'bg-red-50 text-red-700 border-red-200'
                   }`}
                 >
                   {response.metrics.overallScore}/100
@@ -114,9 +114,9 @@ export function ResponseCard({
       <CardContent className="space-y-4">
         {/* Response Content */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Response:</h4>
-          <div className="p-4 bg-muted/50 rounded-lg">
-            <p className="text-sm whitespace-pre-wrap leading-relaxed">
+          <h4 className="text-sm font-medium text-gray-700">Response:</h4>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-sm whitespace-pre-wrap leading-relaxed text-gray-800">
               {response.content}
             </p>
           </div>
