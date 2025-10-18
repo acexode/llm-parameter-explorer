@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trash2, Clock, FileText } from 'lucide-react';
+import { Trash2, Clock, FileText, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 interface ExperimentHistoryProps {
   experiments: Experiment[];
@@ -23,6 +24,10 @@ export function ExperimentHistory({
   selectedId,
   isLoading = false,
 }: ExperimentHistoryProps) {
+  const router = useRouter();
+  
+  // Show only the first 3 experiments
+  const displayedExperiments = experiments.slice(0, 3);
   if (isLoading) {
     return (
       <Card>
@@ -67,7 +72,7 @@ export function ExperimentHistory({
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {experiments.map((experiment) => (
+          {displayedExperiments.map((experiment) => (
             <div
               key={experiment.id}
               className={`p-4 border rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${
@@ -103,6 +108,20 @@ export function ExperimentHistory({
               </div>
             </div>
           ))}
+          
+          {/* View All Button */}
+          {experiments.length > 3 && (
+            <div className="pt-3 border-t border-gray-200">
+              <Button
+                variant="outline"
+                className="w-full bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700 hover:text-blue-800"
+                onClick={() => router.push('/history')}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View All ({experiments.length} experiments)
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

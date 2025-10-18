@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ExperimentForm } from '@/components/ExperimentForm';
 import { ResponseCard } from '@/components/ResponseCard';
 import { ComparisonView } from '@/components/ComparisonView';
@@ -25,6 +26,7 @@ import { toast } from 'sonner';
 import { Sparkles, AlertCircle, History, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('new');
   const [selectedExperimentId, setSelectedExperimentId] = useState<string | null>(null);
   const [selectedResponses, setSelectedResponses] = useState<string[]>([]);
@@ -35,6 +37,17 @@ export default function Home() {
     useExperiment(selectedExperimentId);
   const generateMutation = useGenerateExperiment();
   const deleteMutation = useDeleteExperiment();
+
+  // Handle URL parameters for navigation from history page
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    const experiment = searchParams.get('experiment');
+    
+    if (tab === 'results' && experiment) {
+      setActiveTab('results');
+      setSelectedExperimentId(experiment);
+    }
+  }, [searchParams]);
 
   const handleGenerate = async (data: {
     prompt: string;
