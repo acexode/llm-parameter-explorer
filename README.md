@@ -13,7 +13,9 @@ A full-stack web application for experimenting with Large Language Model paramet
   - **Readability**: Ease of understanding based on Flesch-Kincaid principles
   - **Length Appropriateness**: Response length vs. prompt expectations
 - 📈 **Side-by-Side Comparison**: Compare multiple responses to understand parameter impact
-- 💾 **Experiment Persistence**: SQLite database stores all experiments and responses
+- 💾 **Experiment Persistence**: PostgreSQL/SQLite database stores all experiments and responses
+- 📚 **Experiment History**: Dedicated history page with full experiment management
+- 🔄 **Smart Navigation**: Seamless navigation between main page and history with automatic tab switching
 - 📤 **Export Functionality**: Export experiments as JSON or CSV
 - 🎨 **Modern UI/UX**: Built with shadcn/ui, fully responsive and accessible
 
@@ -29,7 +31,8 @@ A full-stack web application for experimenting with Large Language Model paramet
 ### Backend
 - **Next.js API Routes** (TypeScript)
 - **OpenAI API** (GPT-3.5-turbo)
-- **SQLite** with better-sqlite3 for data persistence
+- **PostgreSQL/SQLite** with automatic environment detection
+- **Database Abstraction Layer** for seamless deployment
 - **Zod** for request validation
 
 ## Architecture & Key Decisions
@@ -53,10 +56,10 @@ User Input → ExperimentForm → API Route → OpenAI API → Metrics Calculati
 
 ### Key Technical Decisions
 
-**Database Choice: SQLite**
-- **Decision**: SQLite over PostgreSQL/MySQL
-- **Rationale**: Zero-configuration, file-based, perfect for demo applications
-- **Trade-off**: Simplicity vs. scalability (acceptable for assessment scope)
+**Database Choice: Hybrid PostgreSQL/SQLite**
+- **Decision**: PostgreSQL for production, SQLite for development
+- **Rationale**: Automatic environment detection enables seamless deployment to Vercel
+- **Trade-off**: Added complexity vs. production-ready scalability
 
 **State Management: TanStack Query**
 - **Decision**: TanStack Query over Redux/Zustand
@@ -153,6 +156,8 @@ User Input → ExperimentForm → API Route → OpenAI API → Metrics Calculati
    Create a `.env.local` file in the root directory:
    ```env
    OPENAI_API_KEY=your_openai_api_key_here
+   # Optional: Add DATABASE_URL for PostgreSQL (production)
+   # DATABASE_URL=postgresql://username:password@host:port/database
    ```
 
 4. **Start the development server:**
@@ -206,7 +211,10 @@ Each response displays:
 ### Experiment History
 
 - All experiments are automatically saved
-- Click any past experiment to view its results
+- **Main Page**: Shows 3 most recent experiments in sidebar
+- **View All Button**: Navigate to dedicated history page when more than 3 experiments exist
+- **History Page**: Full experiment list with search and management
+- **Smart Navigation**: Click any experiment to return to main page with results tab active
 - Delete experiments you no longer need
 
 ## Project Structure
@@ -218,6 +226,8 @@ llm-parameter-explorer/
 │   │   ├── generate/           # Main generation endpoint
 │   │   ├── experiments/        # CRUD operations
 │   │   └── export/             # Export functionality
+│   ├── history/                # History page route
+│   │   └── page.tsx            # Dedicated history page
 │   ├── page.tsx                # Main application page
 │   ├── layout.tsx              # Root layout with providers
 │   └── globals.css             # Global styles
@@ -227,12 +237,14 @@ llm-parameter-explorer/
 │   ├── ResponseCard.tsx        # Individual response display
 │   ├── MetricsDisplay.tsx      # Quality metrics visualization
 │   ├── ComparisonView.tsx      # Side-by-side comparison
-│   ├── ExperimentHistory.tsx   # Past experiments list
+│   ├── ExperimentHistory.tsx   # Past experiments list (3 items + View All)
 │   └── ExportButton.tsx        # Export dialog
 ├── hooks/
 │   └── useExperiments.ts       # TanStack Query hooks
 ├── lib/
-│   ├── db.ts                   # SQLite database operations
+│   ├── database.ts             # Database abstraction layer
+│   ├── db-postgres.ts          # PostgreSQL implementation
+│   ├── db-sqlite.ts            # SQLite implementation
 │   ├── metrics.ts              # Quality metrics calculations
 │   ├── openai.ts               # OpenAI API client
 │   ├── providers.tsx           # React Query provider
@@ -240,7 +252,7 @@ llm-parameter-explorer/
 ├── types/
 │   └── index.ts                # TypeScript type definitions
 └── data/
-    └── experiments.db          # SQLite database (auto-created)
+    └── experiments.db          # SQLite database (auto-created, local only)
 ```
 
 ## Quality Metrics Explained
@@ -325,6 +337,7 @@ npm run lint
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `OPENAI_API_KEY` | Your OpenAI API key for GPT-3.5-turbo | Yes | - |
+| `DATABASE_URL` | PostgreSQL connection string (production) | No | Uses SQLite locally |
 | `NODE_ENV` | Environment mode (development/production) | No | development |
 | `NEXT_PUBLIC_APP_URL` | Public URL for production deployment | No | http://localhost:3000 |
 
@@ -352,6 +365,7 @@ npm run lint
 **Production Environment Variables**
 ```env
 OPENAI_API_KEY=your_production_api_key
+DATABASE_URL=postgresql://username:password@host:port/database
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://your-domain.com
 ```
@@ -378,11 +392,11 @@ NODE_ENV=development
 - **Fallback**: Error handling for API failures and rate limits
 - **Alternative**: Could be extended to support other providers (Anthropic, Google)
 
-**Database: SQLite**
-- **Assumption**: Single-user application with moderate data volume
-- **Rationale**: Zero-configuration, perfect for demo/assessment
-- **Limitation**: Not suitable for high-concurrency production use
-- **Alternative**: PostgreSQL for production scaling
+**Database: Hybrid PostgreSQL/SQLite**
+- **Assumption**: PostgreSQL for production, SQLite for development
+- **Rationale**: Automatic environment detection enables seamless deployment
+- **Benefit**: Production-ready with Vercel compatibility
+- **Fallback**: SQLite for local development and testing
 
 **Browser Support: Modern Browsers**
 - **Assumption**: Users have modern browsers with ES6+ support
@@ -425,11 +439,25 @@ NODE_ENV=development
 
 ## Database
 
-The application uses SQLite for data persistence:
+The application uses a hybrid database approach:
+
+### Local Development (SQLite)
 - Location: `data/experiments.db` (auto-created)
 - Tables: `experiments`, `responses`
 - Automatic initialization on first run
 - Foreign key constraints for data integrity
+
+### Production (PostgreSQL)
+- Uses `DATABASE_URL` environment variable
+- Automatic table creation and indexing
+- Connection pooling for optimal performance
+- SSL support for secure connections
+
+### Database Abstraction Layer
+- Automatic environment detection
+- Seamless switching between SQLite and PostgreSQL
+- Identical API for both database types
+- Production-ready with Vercel compatibility
 
 ## API Endpoints
 
@@ -464,8 +492,15 @@ Export experiment
 - Restart development server after adding/changing env variables
 
 ### Database Issues
+
+**SQLite (Local Development)**
 - Delete `data/experiments.db` to reset database
 - Check file permissions in `data/` directory
+
+**PostgreSQL (Production)**
+- Verify `DATABASE_URL` environment variable is set correctly
+- Check database connection and permissions
+- Ensure tables are created (automatic on first API call)
 
 ### Port Already in Use
 ```bash
@@ -474,6 +509,23 @@ npx kill-port 3000
 # Or use a different port
 npm run dev -- -p 3001
 ```
+
+## Recent Updates
+
+### Version 2.0 - Production Ready
+- **PostgreSQL Support**: Added full PostgreSQL compatibility for production deployment
+- **Database Abstraction**: Automatic environment detection between SQLite and PostgreSQL
+- **History Page**: Dedicated `/history` route with full experiment management
+- **Smart Navigation**: Seamless navigation between main page and history with URL parameters
+- **Vercel Compatibility**: Fixed serverless deployment issues with proper database initialization
+- **Enhanced UX**: "View All" button in experiment history sidebar for better navigation
+
+### Key Improvements
+- **Production Deployment**: Ready for Vercel with PostgreSQL database
+- **Better Organization**: Separate history page for managing large numbers of experiments
+- **Improved Navigation**: URL-based navigation with automatic tab switching
+- **Database Reliability**: Automatic table creation and connection management
+- **Performance**: Connection pooling and optimized database operations
 
 ## Future Enhancements
 
@@ -486,6 +538,8 @@ Potential features for future development:
 - Response diffing visualization
 - API rate limit tracking
 - User authentication and cloud storage
+- Real-time collaboration features
+- Advanced experiment analytics and insights
 
 ## License
 
