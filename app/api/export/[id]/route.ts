@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getExperimentWithResponses } from '@/lib/db';
+import { getExperimentWithResponses } from '@/lib/database';
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +10,7 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
     const format = searchParams.get('format') || 'json';
     
-    const experiment = getExperimentWithResponses(id);
+    const experiment = await getExperimentWithResponses(id);
     
     if (!experiment) {
       return NextResponse.json(

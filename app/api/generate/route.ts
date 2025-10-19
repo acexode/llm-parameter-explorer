@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
-import { createExperiment, createResponse } from '@/lib/db';
+import { createExperiment, createResponse } from '@/lib/database';
 import { generateCompletion } from '@/lib/openai';
 import { calculateQualityMetrics } from '@/lib/metrics';
 import { GenerateRequest, GenerateResponse } from '@/types';
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     
     // Create experiment
     const experimentId = uuidv4();
-    const experiment = createExperiment(experimentId, validatedData.prompt);
+    const experiment = await createExperiment(experimentId, validatedData.prompt);
     
     // Generate parameter combinations
     const parameterCombinations = generateParameterCombinations(
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
           
           // Save response to database
           const responseId = uuidv4();
-          const response = createResponse({
+          const response = await createResponse({
             id: responseId,
             experiment_id: experimentId,
             temperature,

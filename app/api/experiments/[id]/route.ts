@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getExperimentWithResponses, deleteExperiment } from '@/lib/db';
+import { getExperimentWithResponses, deleteExperiment } from '@/lib/database';
 
 export async function GET(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { id } = await params;
     
-    const experiment = getExperimentWithResponses(id);
+    const experiment = await getExperimentWithResponses(id);
     
     if (!experiment) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    deleteExperiment(id);
+    await deleteExperiment(id);
     
     return NextResponse.json({ success: true });
   } catch (error) {

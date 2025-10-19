@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllExperiments } from '@/lib/db';
+import { getAllExperiments } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const offset = Math.max(parseInt(searchParams.get('offset') || '0'), 0);
     
-    const experiments = getAllExperiments(limit, offset);
+    const experiments = await getAllExperiments(limit, offset);
     
     return NextResponse.json({
       experiments,
