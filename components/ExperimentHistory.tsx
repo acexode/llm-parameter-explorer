@@ -97,13 +97,13 @@ export function ExperimentHistory({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="shrink-0 hover:bg-destructive hover:text-destructive-foreground"
+                  className="group shrink-0 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(experiment.id);
                   }}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 text-gray-500 group-hover:text-red-600 transition-colors duration-200" />
                 </Button>
               </div>
             </div>
