@@ -23,6 +23,8 @@ export function useExperiment(id: string | null) {
       return data as ExperimentWithResponses;
     },
     enabled: !!id,
+    staleTime: 0, // Always consider data stale
+    refetchOnMount: true, // Always refetch when component mounts
   });
 }
 

@@ -22,11 +22,13 @@ import {
   useGenerateExperiment,
   useDeleteExperiment,
 } from '@/hooks/useExperiments';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Sparkles, AlertCircle, History, ChevronDown, ChevronUp } from 'lucide-react';
 
 function HomeContent() {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('new');
   const [selectedExperimentId, setSelectedExperimentId] = useState<string | null>(null);
   const [selectedResponses, setSelectedResponses] = useState<string[]>([]);
@@ -46,8 +48,13 @@ function HomeContent() {
     if (tab === 'results' && experiment) {
       setActiveTab('results');
       setSelectedExperimentId(experiment);
+      
+      // Invalidate the experiment cache to force fresh data fetch
+      queryClient.invalidateQueries({ 
+        queryKey: ['experiment', experiment] 
+      });
     }
-  }, [searchParams]);
+  }, [searchParams, queryClient]);
 
   const handleGenerate = async (data: {
     prompt: string;
