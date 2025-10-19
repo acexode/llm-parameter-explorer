@@ -215,6 +215,7 @@ Each response displays:
 - **View All Button**: Navigate to dedicated history page when more than 3 experiments exist
 - **History Page**: Full experiment list with search and management
 - **Smart Navigation**: Click any experiment to return to main page with results tab active
+- **Enhanced UX**: Smooth hover effects and improved visual feedback
 - Delete experiments you no longer need
 
 ## Project Structure
@@ -301,9 +302,10 @@ The application handles various error scenarios:
 ## Performance Considerations
 
 - **Database**: Indexed queries for fast experiment retrieval
-- **Caching**: TanStack Query caches responses (1-minute stale time)
+- **Caching**: TanStack Query with optimized cache invalidation for fresh data
 - **Optimistic Updates**: Instant UI feedback on mutations
 - **Pagination**: Experiments list supports pagination (default 50)
+- **Navigation Performance**: Cache invalidation ensures fresh data when navigating from history
 
 ## Accessibility Features
 
@@ -512,6 +514,12 @@ npm run dev -- -p 3001
 
 ## Recent Updates
 
+### Version 2.1 - Enhanced UX & Production Stability
+- **Improved Hover Effects**: Enhanced delete button styling with smooth color transitions and proper contrast
+- **Caching Fixes**: Resolved production caching issues with TanStack Query configuration
+- **Navigation Reliability**: Fixed infinite loading states when navigating from history page
+- **Production Stability**: Improved error handling and data consistency in deployment environment
+
 ### Version 2.0 - Production Ready
 - **PostgreSQL Support**: Added full PostgreSQL compatibility for production deployment
 - **Database Abstraction**: Automatic environment detection between SQLite and PostgreSQL
@@ -526,6 +534,8 @@ npm run dev -- -p 3001
 - **Improved Navigation**: URL-based navigation with automatic tab switching
 - **Database Reliability**: Automatic table creation and connection management
 - **Performance**: Connection pooling and optimized database operations
+- **UI Polish**: Smooth animations, better hover states, and improved visual feedback
+- **Data Consistency**: Fixed caching issues ensuring fresh data on navigation
 
 ## Future Enhancements
 

@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Plus, Minus, Zap, Target, FileText, Play, ArrowRight } from 'lucide-react';
+import { Loader2, Plus, Trash2, Zap, Target, FileText, Play, ArrowRight } from 'lucide-react';
 
 interface ExperimentFormProps {
   onSubmit: (data: {
@@ -173,7 +173,7 @@ export function ExperimentForm({ onSubmit, isLoading = false }: ExperimentFormPr
                             onClick={() => removeTemperatureValue(idx)}
                             className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
                           >
-                            <Minus className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
@@ -249,7 +249,7 @@ export function ExperimentForm({ onSubmit, isLoading = false }: ExperimentFormPr
                             onClick={() => removeTopPValue(idx)}
                             className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
                           >
-                            <Minus className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
