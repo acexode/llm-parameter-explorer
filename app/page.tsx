@@ -101,12 +101,12 @@ function HomeContent() {
   };
 
   const selectedResponsesData =
-    selectedExperiment?.responses.filter((r) =>
+    selectedExperiment?.responses?.filter((r) =>
       selectedResponses.includes(r.id)
     ) || [];
 
   // Sort responses by overall score for ranking
-  const sortedResponses = selectedExperiment
+  const sortedResponses = selectedExperiment?.responses
     ? [...selectedExperiment.responses].sort(
         (a, b) => b.metrics.overallScore - a.metrics.overallScore
       )
@@ -289,7 +289,18 @@ function HomeContent() {
                 </div>
               )}
 
-              {selectedExperiment && !experimentLoading && (
+              {selectedExperiment && !experimentLoading && !selectedExperiment.responses && (
+                <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                  <CardContent className="py-8">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      <span className="text-lg font-medium text-gray-600">Loading experiment responses...</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {selectedExperiment && !experimentLoading && selectedExperiment.responses && (
                 <>
                   {/* Experiment Info */}
                   <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
@@ -303,11 +314,11 @@ function HomeContent() {
                             </p>
                           </div>
                           <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
-                            {selectedExperiment.responses.length} responses
+                            {selectedExperiment.responses?.length || 0} responses
                           </Badge>
                         </div>
                         
-                        {selectedExperiment.responses.length > 1 && (
+                        {(selectedExperiment.responses?.length || 0) > 1 && (
                           <div className="pt-3 border-t border-gray-200">
                             <p className="text-sm text-gray-600 mb-2">
                               Select responses to compare:
@@ -318,15 +329,15 @@ function HomeContent() {
                               onClick={() =>
                                 setSelectedResponses(
                                   selectedResponses.length ===
-                                    selectedExperiment.responses.length
+                                    (selectedExperiment.responses?.length || 0)
                                     ? []
-                                    : selectedExperiment.responses.map((r) => r.id)
+                                    : selectedExperiment.responses?.map((r) => r.id) || []
                                 )
                               }
                               className="border-dashed border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50"
                             >
                               {selectedResponses.length ===
-                              selectedExperiment.responses.length
+                              (selectedExperiment.responses?.length || 0)
                                 ? 'Deselect All'
                                 : 'Select All'}
                             </Button>
@@ -340,7 +351,7 @@ function HomeContent() {
                   <div className="space-y-4">
                     {sortedResponses.map((response, index) => (
                       <div key={response.id} className="space-y-2">
-                        {selectedExperiment.responses.length > 1 && (
+                        {(selectedExperiment.responses?.length || 0) > 1 && (
                           <div className="flex items-center gap-2">
                             <Checkbox
                               id={`select-${response.id}`}
